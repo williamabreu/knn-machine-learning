@@ -15,16 +15,16 @@ def load_dataset(file_path):
 
     return header, data
 
-def split_dataset(data, split):
-    trainingSet=[]
-    testSet=[]
+def split_dataset(data, rate):
+    training_data = []
+    testing_data = []
     for x in range(len(data)-1):
-        if random.random() < split:
-            trainingSet.append(data[x])
+        if random.random() < rate:
+            training_data.append(data[x])
         else:
-            testSet.append(data[x])
+            testing_data.append(data[x])
 
-    return trainingSet, testSet
+    return training_data, testing_data
 
 def euclideanDistance(instance1, instance2, length):
     distance = 0
