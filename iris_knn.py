@@ -4,18 +4,25 @@ import random
 import math
 import operator
 
-def load_data(file_path, split, trainingSet=[] , testSet=[]):
+def load_dataset(file_path):
+    header = data = None
+
     with open(file_path) as dataset:
         header = dataset.readline()[:-1].split(',')
         data = [line[:-1].split(',') for line in dataset]
         for i in range(len(data)):
-            data[i] = list(map(float, data[i][:-1])) + [data[-1]]
+            data[i] = list(map(float, data[i][:-1])) + [data[i][-1]]
 
-        for x in range(len(data)-1):
-            if random.random() < split:
-                trainingSet.append(data[x])
-            else:
-                testSet.append(data[x])
+    return header, data
+
+def split_dataset(data, split):
+    trainingSet=[]
+    testSet=[]
+    for x in range(len(data)-1):
+        if random.random() < split:
+            trainingSet.append(data[x])
+        else:
+            testSet.append(data[x])
 
     return trainingSet, testSet
 
@@ -56,13 +63,13 @@ def getAccuracy(testSet, predictions):
     return (correct/float(len(testSet))) * 100.0
     
 def main():
-    # prepare data
-    trainingSet=[]
-    testSet=[]
-    split = 0.67
-    loadData('data/iris_classic.csv', split, trainingSet, testSet)
+    split_rate = 0.67
+    header, data = load_dataset('dataset/iris_classic.csv')
+    trainingSet, testSet = split_dataset(data, split_rate)
+    
     print('Train set: ' + repr(len(trainingSet)))
     print('Test set: ' + repr(len(testSet)))
+    
     # generate predictions
     predictions=[]
     k = 3
