@@ -11,6 +11,7 @@ def load_dataset(file_path):
         classes = set()
         header = dataset.readline()[:-1].split(',')
         data = [line[:-1].split(',') for line in dataset]
+        data.sort(key=lambda x: x[-1])
         for i in range(len(data)):
             classname = data[i][-1]
             data[i] = list(map(float, data[i][:-1])) + [classname]
