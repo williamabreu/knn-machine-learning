@@ -5,19 +5,22 @@ import math
 import operator
 
 def load_dataset(file_path):
-    header = classes = data = None
+    classes = None
 
     with open(file_path) as dataset:
-        classes = set()
+        classes = {}
         header = dataset.readline()[:-1].split(',')
         data = [line[:-1].split(',') for line in dataset]
         data.sort(key=lambda x: x[-1])
         for i in range(len(data)):
             classname = data[i][-1]
-            data[i] = list(map(float, data[i][:-1])) + [classname]
-            classes.add(classname)
+            dataline = list(map(float, data[i][:-1]))
+            if classname in classes:
+                classes[classname].append(dataline)
+            else:
+                classes[classname] = [dataline]
 
-    return header, classes, data
+    return classes
 
 def split_dataset(data, rate):
     training_data = []
@@ -92,4 +95,5 @@ def main():
     accuracy = getAccuracy(testSet, predictions)
     print(('Accuracy: ' + repr(accuracy) + '%'))
     
-main()
+if __name__ == '__main__':
+    main()
