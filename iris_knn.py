@@ -34,11 +34,8 @@ def split_dataset(data, rate):
 
     return training_data, testing_data
 
-def euclidean_distance(instance1, instance2, length):
-    distance = 0
-    for x in range(length):
-        distance += pow((instance1[x] - instance2[x]), 2)
-    return math.sqrt(distance)
+def euclidean_distance(dataline1, dataline2):
+    return sum([(x - y)**2 for x, y in zip(dataline1, dataline2)])
 
 def neighborhood(trainingSet, testInstance, k):
     distances = []
