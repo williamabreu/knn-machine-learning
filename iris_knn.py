@@ -50,12 +50,25 @@ def predict(neighbors):
 def main(dataset_path, split_rate, k):
     data = load_dataset(dataset_path)
     training_data, testing_data = split_dataset(data, split_rate)
+    
+    classnames = sorted(data.keys())
+    confusion_matrix = {predicted: {actual: 0 for actual in classnames} for predicted in classnames}
 
     for classname in testing_data:
         for testing_instance in testing_data[classname]:
             neighbors = neighborhood(testing_instance, training_data, k)
             prediction = predict(neighbors)
-            print('> predicted=' + repr(prediction) + ', actual=' + classname)
+            confusion_matrix[prediction][classname] += 1
+            if prediction == classname:
+                print('Previsto: {:^16}   |   Real: {:^16} -- CORRETO'.format(prediction, classname))
+            else:
+                print('Previsto: {:^16}   |   Real: {:^16} -- INCORRETO'.format(prediction, classname))
+    
+    print()
+
+    for key in confusion_matrix:
+        print(key, end=': ')
+        print(confusion_matrix[key])
     
 if __name__ == '__main__':
     main('dataset/iris_classic.csv', 0.5, 3)
