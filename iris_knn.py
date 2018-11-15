@@ -1,7 +1,3 @@
-import random
-import math
-import operator
-
 def load_dataset(file_path):
     classes = None
 
@@ -50,32 +46,16 @@ def predict(neighbors):
     classnames = [x['classname'] for x in neighbors]
     names_count = [{'classname': name, 'count': classnames.count(name)} for name in set(classnames)]
     return max(names_count, key=lambda x: x['count'])['classname']
-
-def getAccuracy(testSet, predictions):
-    correct = 0
-    for x in range(len(testSet)):
-        if testSet[x][-1] == predictions[x]:
-            correct += 1
-    return (correct/float(len(testSet))) * 100.0
     
-def main():
-    split_rate = 0.32
-    data = load_dataset('dataset/iris_classic.csv')
+def main(dataset_path, split_rate, k):
+    data = load_dataset(dataset_path)
     training_data, testing_data = split_dataset(data, split_rate)
-    
-    # generate predictions
-    predictions=[]
-    k = 3
 
     for classname in testing_data:
         for testing_instance in testing_data[classname]:
             neighbors = neighborhood(testing_instance, training_data, k)
             prediction = predict(neighbors)
-            predictions.append(prediction)
             print('> predicted=' + repr(prediction) + ', actual=' + classname)
     
-    # accuracy = getAccuracy(testSet, predictions)
-    # print(('Accuracy: ' + repr(accuracy) + '%'))
-    
 if __name__ == '__main__':
-    main()
+    main('dataset/iris_classic.csv', 0.5, 3)
