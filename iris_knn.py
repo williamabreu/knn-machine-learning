@@ -1,5 +1,3 @@
-# Example of kNN implemented from Scratch in Python
-
 import random
 import math
 import operator
@@ -37,28 +35,21 @@ def split_dataset(data, rate):
 def euclidean_distance(dataline1, dataline2):
     return sum([(x - y)**2 for x, y in zip(dataline1, dataline2)])
 
-def neighborhood(trainingSet, testInstance, k):
+def neighborhood(testing_instance, training_data, k):
     distances = []
-    length = len(testInstance)-1
-    for x in range(len(trainingSet)):
-        dist = euclidean_distance(testInstance, trainingSet[x], length)
-        distances.append((trainingSet[x], dist))
-    distances.sort(key=operator.itemgetter(1))
-    neighbors = []
-    for x in range(k):
-        neighbors.append(distances[x][0])
-    return neighbors
 
-def getResponse(neighbors):
-    classVotes = {}
-    for x in range(len(neighbors)):
-        response = neighbors[x][-1]
-        if response in classVotes:
-            classVotes[response] += 1
-        else:
-            classVotes[response] = 1
-    sortedVotes = sorted(iter(classVotes.items()), key=operator.itemgetter(1), reverse=True)
-    return sortedVotes[0][0]
+    for classname in training_data:
+        for training_instance in training_data[classname]:
+            distance = euclidean_distance(testing_instance, training_instance)
+            distances.append({'distance': distance, 'classname': classname})
+    
+    distances.sort(key=lambda x: x['distance'])
+    return distances[:k]
+
+def predict(neighbors):
+    classnames = [x['classname'] for x in neighbors]
+    names_count = [{'classname': name, 'count': classnames.count(name)} for name in set(classnames)]
+    return max(names_count, key=lambda x: x['count'])['classname']
 
 def getAccuracy(testSet, predictions):
     correct = 0
@@ -69,25 +60,18 @@ def getAccuracy(testSet, predictions):
     
 def main():
     split_rate = 0.67
-    header, classes, data = load_dataset('dataset/iris_classic.csv')
-    ##########################
-    print(classes)
-    print(header)
-    for i in data:
-        print(i)
-    input()
-    ##########################
-    trainingSet, testSet = split_dataset(data, split_rate)
+    data = load_dataset('dataset/iris_classic.csv')
+    training_data, testSet = split_dataset(data, split_rate)
     
-    print('Train set: ' + repr(len(trainingSet)))
+    print('Train set: ' + repr(len(training_data)))
     print('Test set: ' + repr(len(testSet)))
     
     # generate predictions
     predictions=[]
     k = 3
-    for x in range(len(testSet)):
-        neighbors = neighborhood(trainingSet, testSet[x], k)
-        result = getResponse(neighbors)
+    for testline in testSet.values():
+        neighbors = neighborhood(list(training_data.values()), testline, k)
+        result = predict(neighbors)
         predictions.append(result)
         print(('> predicted=' + repr(result) + ', actual=' + repr(testSet[x][-1])))
     accuracy = getAccuracy(testSet, predictions)
