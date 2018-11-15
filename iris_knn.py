@@ -22,7 +22,7 @@ def load_dataset(file_path):
 def split_dataset(data, rate):
     training_data = []
     testing_data = []
-    for x in range(len(data)-1):
+    for x in range(len(data)):
         if random.random() < rate:
             training_data.append(data[x])
         else:
@@ -69,6 +69,13 @@ def getAccuracy(testSet, predictions):
 def main():
     split_rate = 0.67
     header, classes, data = load_dataset('dataset/iris_classic.csv')
+    ##########################
+    print(classes)
+    print(header)
+    for i in data:
+        print(i)
+    input()
+    ##########################
     trainingSet, testSet = split_dataset(data, split_rate)
     
     print('Train set: ' + repr(len(trainingSet)))
