@@ -59,23 +59,23 @@ def getAccuracy(testSet, predictions):
     return (correct/float(len(testSet))) * 100.0
     
 def main():
-    split_rate = 0.67
+    split_rate = 0.32
     data = load_dataset('dataset/iris_classic.csv')
-    training_data, testSet = split_dataset(data, split_rate)
-    
-    print('Train set: ' + repr(len(training_data)))
-    print('Test set: ' + repr(len(testSet)))
+    training_data, testing_data = split_dataset(data, split_rate)
     
     # generate predictions
     predictions=[]
     k = 3
-    for testline in testSet.values():
-        neighbors = neighborhood(list(training_data.values()), testline, k)
-        result = predict(neighbors)
-        predictions.append(result)
-        print(('> predicted=' + repr(result) + ', actual=' + repr(testSet[x][-1])))
-    accuracy = getAccuracy(testSet, predictions)
-    print(('Accuracy: ' + repr(accuracy) + '%'))
+
+    for classname in testing_data:
+        for testing_instance in testing_data[classname]:
+            neighbors = neighborhood(testing_instance, training_data, k)
+            prediction = predict(neighbors)
+            predictions.append(prediction)
+            print('> predicted=' + repr(prediction) + ', actual=' + classname)
+    
+    # accuracy = getAccuracy(testSet, predictions)
+    # print(('Accuracy: ' + repr(accuracy) + '%'))
     
 if __name__ == '__main__':
     main()
