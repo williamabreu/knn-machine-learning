@@ -5,15 +5,18 @@ import math
 import operator
 
 def load_dataset(file_path):
-    header = data = None
+    header = classes = data = None
 
     with open(file_path) as dataset:
+        classes = set()
         header = dataset.readline()[:-1].split(',')
         data = [line[:-1].split(',') for line in dataset]
         for i in range(len(data)):
-            data[i] = list(map(float, data[i][:-1])) + [data[i][-1]]
+            classname = data[i][-1]
+            data[i] = list(map(float, data[i][:-1])) + [classname]
+            classes.add(classname)
 
-    return header, data
+    return header, classes, data
 
 def split_dataset(data, rate):
     training_data = []
@@ -26,17 +29,17 @@ def split_dataset(data, rate):
 
     return training_data, testing_data
 
-def euclideanDistance(instance1, instance2, length):
+def euclidean_distance(instance1, instance2, length):
     distance = 0
     for x in range(length):
         distance += pow((instance1[x] - instance2[x]), 2)
     return math.sqrt(distance)
 
-def getNeighbors(trainingSet, testInstance, k):
+def neighborhood(trainingSet, testInstance, k):
     distances = []
     length = len(testInstance)-1
     for x in range(len(trainingSet)):
-        dist = euclideanDistance(testInstance, trainingSet[x], length)
+        dist = euclidean_distance(testInstance, trainingSet[x], length)
         distances.append((trainingSet[x], dist))
     distances.sort(key=operator.itemgetter(1))
     neighbors = []
@@ -64,7 +67,7 @@ def getAccuracy(testSet, predictions):
     
 def main():
     split_rate = 0.67
-    header, data = load_dataset('dataset/iris_classic.csv')
+    header, classes, data = load_dataset('dataset/iris_classic.csv')
     trainingSet, testSet = split_dataset(data, split_rate)
     
     print('Train set: ' + repr(len(trainingSet)))
@@ -74,7 +77,7 @@ def main():
     predictions=[]
     k = 3
     for x in range(len(testSet)):
-        neighbors = getNeighbors(trainingSet, testSet[x], k)
+        neighbors = neighborhood(trainingSet, testSet[x], k)
         result = getResponse(neighbors)
         predictions.append(result)
         print(('> predicted=' + repr(result) + ', actual=' + repr(testSet[x][-1])))
