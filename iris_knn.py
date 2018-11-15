@@ -23,13 +23,14 @@ def load_dataset(file_path):
     return classes
 
 def split_dataset(data, rate):
-    training_data = []
-    testing_data = []
-    for x in range(len(data)):
-        if random.random() < rate:
-            training_data.append(data[x])
-        else:
-            testing_data.append(data[x])
+    training_data = {}
+    testing_data = {}
+    
+    for classname in data:
+        dataline = data[classname]
+        partition = int(len(dataline) * rate)
+        training_data[classname] = dataline[:partition]
+        testing_data[classname] = dataline[partition:]
 
     return training_data, testing_data
 
