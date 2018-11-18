@@ -71,4 +71,4 @@ def main(dataset_path, split_rate, k):
         print(confusion_matrix[key])
     
 if __name__ == '__main__':
-    main('dataset/iris_classic.csv', 0.5, 3)
+    main('dataset/spam_base.csv', 0.5, 3)
