@@ -47,7 +47,7 @@ def predict(neighbors):
     names_count = [{'classname': name, 'count': classnames.count(name)} for name in set(classnames)]
     return max(names_count, key=lambda x: x['count'])['classname']
     
-def main(dataset_path, split_rate, k):
+def KNN_run(dataset_path, split_rate, k):
     data = load_dataset(dataset_path)
     training_data, testing_data = split_dataset(data, split_rate)
     
@@ -71,4 +71,6 @@ def main(dataset_path, split_rate, k):
         print(confusion_matrix[key])
     
 if __name__ == '__main__':
-    main('dataset/spam_base.csv', 0.5, 3)
+    from sys import argv
+    dataset_path, split_rate, k = argv[1], float(argv[2]), int(argv[3])
+    KNN_run(dataset_path, split_rate, k)
