@@ -10,7 +10,6 @@
 # desde que seja obedecida a formatação do arquivo CSV.
 
 
-
 def load_dataset(file_path: str) -> dict:
     """
     Carrega o arquivo CSV do dataset em JSON para o sistema
@@ -32,6 +31,7 @@ def load_dataset(file_path: str) -> dict:
 
     return classes
 
+
 def split_dataset(data: dict, rate: float) -> (dict, dict):
     """
     Divide o dataset JSON em dois subconjuntos disjuntos, um
@@ -48,11 +48,13 @@ def split_dataset(data: dict, rate: float) -> (dict, dict):
 
     return training_data, testing_data
 
+
 def euclidean_distance(dataline1: list, dataline2: list) -> float:
     """
     Calcula a distância euclideana entre duas instâncias do dataset
     """
     return sum([(x - y)**2 for x, y in zip(dataline1, dataline2)])
+
 
 def neighborhood(testing_instance: list, training_data: dict, k: int) -> list:
     """
@@ -68,6 +70,7 @@ def neighborhood(testing_instance: list, training_data: dict, k: int) -> list:
     distances.sort(key=lambda x: x['distance'])
     return distances[:k]
 
+
 def predict(neighbors: list) -> str:
     """
     Calcula qual classe tem maior incidência nos vizinhos por
@@ -77,6 +80,7 @@ def predict(neighbors: list) -> str:
     names_count = [{'classname': name, 'count': classnames.count(name)} for name in set(classnames)]
     return max(names_count, key=lambda x: x['count'])['classname']
     
+
 def KNN_run(dataset_path: str, split_rate: float, k: int) -> None:
     """
     Chamada principal do algoritmo KNN
@@ -86,6 +90,8 @@ def KNN_run(dataset_path: str, split_rate: float, k: int) -> None:
     
     classnames = sorted(data.keys())
     confusion_matrix = {predicted: {actual: 0 for actual in classnames} for predicted in classnames}
+    correct_count = 0
+    incorrect_count = 0
     
     # Codificação de cores do terminal:
     #   \x1B[0m  -- padrão
@@ -105,8 +111,10 @@ def KNN_run(dataset_path: str, split_rate: float, k: int) -> None:
             # Reconhecimento da instância:
             if prediction == classname:
                 print(strformat.format('\x1B[32m', prediction, classname, '\x1B[42m', 'CORRETO'))
+                correct_count += 1
             else:
                 print(strformat.format('\x1B[31m', prediction, classname, '\x1B[41m', 'INCORRETO'))
+                incorrect_count += 1
 
     # Matriz de confusão:
     print()
@@ -124,8 +132,14 @@ def KNN_run(dataset_path: str, split_rate: float, k: int) -> None:
             else:
                 print('\x1B[31m{:^20}\x1B[0m'.format(confusion_matrix[key1][key2]), end=' ')
         print()
-    print('-' * 21 * (len(classnames) + 1))
+    linesize = 21 * (len(classnames) + 1)
+    print('-' * linesize)
     print()
+
+    # Acurácia:
+    accuracy = 100 * correct_count / (correct_count + incorrect_count)
+    print('Acurácia: {:.4f} %'.format(accuracy).center(linesize))
+    print()  
 
     
 if __name__ == '__main__':
