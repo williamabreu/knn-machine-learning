@@ -86,22 +86,46 @@ def KNN_run(dataset_path: str, split_rate: float, k: int) -> None:
     
     classnames = sorted(data.keys())
     confusion_matrix = {predicted: {actual: 0 for actual in classnames} for predicted in classnames}
+    
+    # Codificação de cores do terminal:
+    #   \x1B[0m  -- padrão
+    #   \x1B[1m  -- negrito
+    #   \x1B[31m -- texto vermelho
+    #   \x1B[41m -- fundo vermelho
+    #   \x1B[32m -- texto verde
+    #   \x1B[42m -- fundo verde
+    strformat = 'Previsto -> \x1B[1m{0}{1:>20}\x1B[0m  x  \x1B[1m{0}{2:<20}\x1B[0m <- Real    {3}{4:^11}\x1B[0m'
 
     for classname in testing_data:
         for testing_instance in testing_data[classname]:
             neighbors = neighborhood(testing_instance, training_data, k)
             prediction = predict(neighbors)
             confusion_matrix[prediction][classname] += 1
+            
+            # Reconhecimento da instância:
             if prediction == classname:
-                print('Previsto: {:^16}   |   Real: {:^16} -- CORRETO'.format(prediction, classname))
+                print(strformat.format('\x1B[32m', prediction, classname, '\x1B[42m', 'CORRETO'))
             else:
-                print('Previsto: {:^16}   |   Real: {:^16} -- INCORRETO'.format(prediction, classname))
-    
-    print()
+                print(strformat.format('\x1B[31m', prediction, classname, '\x1B[41m', 'INCORRETO'))
 
-    for key in confusion_matrix:
-        print(key, end=': ')
-        print(confusion_matrix[key])
+    # Matriz de confusão:
+    print()
+    print('Matriz de confusão:')
+    print('-' * 21 * (len(classnames) + 1))
+    print(''.center(20), end=' ')
+    for key in classnames:
+        print('{:^20}'.format(key), end=' ')
+    print()
+    for key1 in classnames:
+        print('{:^20}'.format(key1), end=' ')
+        for key2 in classnames:
+            print('{:^20}'.format(confusion_matrix[key1][key2]), end=' ')
+        print()
+    print('-' * 21 * (len(classnames) + 1))
+    print('Linha: classe inferida')
+    print('Coluna: classe verdadeira')
+
+
     
 if __name__ == '__main__':
     # Uso pelo terminal:
