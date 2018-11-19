@@ -114,17 +114,18 @@ def KNN_run(dataset_path: str, split_rate: float, k: int) -> None:
     print('-' * 21 * (len(classnames) + 1))
     print(''.center(20), end=' ')
     for key in classnames:
-        print('{:^20}'.format(key), end=' ')
+        print('\x1B[1m{:^20}\x1B[0m'.format(key), end=' ')
     print()
     for key1 in classnames:
-        print('{:^20}'.format(key1), end=' ')
+        print('\x1B[1m{:^20}\x1B[0m'.format(key1), end=' ')
         for key2 in classnames:
-            print('{:^20}'.format(confusion_matrix[key1][key2]), end=' ')
+            if key1 == key2:
+                print('\x1B[32m{:^20}\x1B[0m'.format(confusion_matrix[key1][key2]), end=' ')
+            else:
+                print('\x1B[31m{:^20}\x1B[0m'.format(confusion_matrix[key1][key2]), end=' ')
         print()
     print('-' * 21 * (len(classnames) + 1))
-    print('Linha: classe inferida')
-    print('Coluna: classe verdadeira')
-
+    print()
 
     
 if __name__ == '__main__':
